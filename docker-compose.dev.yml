@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    container_name: drfblog-db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=drfblog
+      - POSTGRES_USER=drfbloguser
+      - POSTGRES_PASSWORD=123@456
+      - POSTGRES_SYNCHRONOUS_COMMIT=on
+      - POSTGRES_WAL_LEVEL=replica
+    volumes:
+      - drfblog-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "drfbloguser", "-d", "drfblog", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+      image: dpage/pgadmin4
+      container_name: bookmate-pgadmin4
+      restart: always
+      environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: 'pg_pass'
+      ports:
+        - 5050:80
+      depends_on:
+        - db
+
+
+volumes:
+  drfblog-data:
