@@ -22,7 +22,7 @@ services:
 
   pgadmin:
       image: dpage/pgadmin4
-      container_name: bookmate-pgadmin4
+      container_name: drfblog-pgadmin4
       restart: always
       environment:
         PGADMIN_DEFAULT_EMAIL: admin@admin.com
