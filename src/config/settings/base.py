@@ -10,6 +10,7 @@ ALLOWED_HOSTS = []
 
 LOCAL_APPS = [
     'users',
+    'common',
 ]
 
 THIRD_PARTY_APPS = [
