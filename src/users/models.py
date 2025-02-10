@@ -44,7 +44,6 @@ class UserManager(BaseUserManager):
 
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
-    """ eh """
     email = models.EmailField(
         max_length=255,
         unique=True,
