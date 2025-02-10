@@ -51,10 +51,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     )
     username = models.CharField(
         max_length=20,
-        blank=True,
         validators=[MinLengthValidator(6),],
-        unique=True,
-        db_index=True
     )
 
     is_staff = models.BooleanField(default=False,)
