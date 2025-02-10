@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.models import ASCIIUsernameValidator
 from django.core.validators import MinLengthValidator
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -9,9 +9,42 @@ from django.core.mail import send_mail
 from common.models import BaseModel
 
 
+class UserManager(BaseUserManager):
+    def _create_user(self, email: str, password: str | None = None, **extra_fields) -> "User":
+        if not email:
+            raise ValueError("User must have an email")
+
+        user = self.model(
+            email=self.normalize_email(email.lower()),
+            **extra_fields
+        )
+
+        if password is not None:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+
+        user.full_clean()
+        user.save(using=self._db)
+
+        return user
+
+    def create_user(self, email: str, password: str | None = None, **extra_fields) -> "User":
+        extra_fields.setdefault("is_active", False)
+        extra_fields.setdefault("is_staff", False)
+
+        return self._create_user(email, password, **extra_fields)
+
+    def create_superuser(self, email: str, password: str | None = None, **extra_fields) -> "User":
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        return self._create_user(email, password, **extra_fields)
+
+
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     """ eh """
-    username_validator = ASCIIUsernameValidator()
     email = models.EmailField(
         max_length=255,
         unique=True,
@@ -19,10 +52,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     )
     username = models.CharField(
         max_length=20,
-        validators=[
-            MinLengthValidator(6),
-            username_validator,
-        ],
+        validators=[MinLengthValidator(6),],
         unique=True,
         db_index=True
     )
