@@ -6,7 +6,7 @@ from ..models import User
 
 class UserCreateTests(TestCase):
     def test_user_create_service(self):
-        user = create_user(
+        create_user(
             email="user1724@test.com",
             password="Test1234",
         )
