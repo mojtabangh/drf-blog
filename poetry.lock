@@ -54,6 +54,21 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-rest-knox"
+version = "5.0.2"
+description = "Authentication for django rest framework"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_rest_knox-5.0.2-py3-none-any.whl", hash = "sha256:694da5d0ad6eb3edbfd7cdc8d69c089fc074e6b0e548e00ff2750bf2fdfadb6f"},
+    {file = "django_rest_knox-5.0.2.tar.gz", hash = "sha256:f283622bcf5d28a6a0203845c065d06c7432efa54399ae32070c61ac03af2d6f"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+djangorestframework = "*"
+
+[[package]]
 name = "djangorestframework"
 version = "3.15.2"
 description = "Web APIs for Django, made easy."
@@ -465,4 +480,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "c805bd605273b0ce6c3b8a01cbef41e8438c457671ee0ef1398222ce23085719"
+content-hash = "69ad2331623fad09ccecd017c720a57ee34ca39131fad0352c0ac87d569622f2"
