@@ -104,3 +104,7 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+
+# Knox
+from config.knox import *
