@@ -1,3 +1,7 @@
-from django.test import TestCase
+from django.urls import path, include
 
-# Create your tests here.
+app_name = 'api'
+
+urlpatterns = [
+    path('users/', include('users.urls', 'users')),
+]
