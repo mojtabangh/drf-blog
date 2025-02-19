@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from rest_framework import status
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from .models import User
 from .services import create_user
@@ -34,6 +35,7 @@ class UserRegisterApi(APIView):
             model = User
             fields = ("email", "created_at", "updated_at")
 
+    @extend_schema(request=InputUserRegisterSerializer, responses=OutputUserRegisterSerializer)
     def post(self, request):
         data = self.InputUserRegisterSerializer(data=request.data)
         data.is_valid(raise_exception=True)
