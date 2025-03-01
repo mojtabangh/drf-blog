@@ -11,6 +11,7 @@ ALLOWED_HOSTS = []
 LOCAL_APPS = [
     'users',
     'common',
+    'authentication',
 ]
 
 THIRD_PARTY_APPS = [
