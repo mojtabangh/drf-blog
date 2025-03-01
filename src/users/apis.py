@@ -19,7 +19,7 @@ class UserRegisterApi(APIView):
                 MaxLengthValidator(limit_value=32),
             ],
         )
-        password = serializers.CharField(required=True,)
+        confirm_password = serializers.CharField(required=True,)
 
         def validate(self, data):
             if not data.get("password") or not data.get("confirm_password"):
