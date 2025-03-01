@@ -15,7 +15,7 @@ LOCAL_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
-    # 'knox',
+    'rest_framework_simplejwt',
     'drf_spectacular',
 ]
 
