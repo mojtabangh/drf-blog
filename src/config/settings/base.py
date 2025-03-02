@@ -12,6 +12,7 @@ LOCAL_APPS = [
     'users',
     'common',
     'authentication',
+    'blog',
 ]
 
 THIRD_PARTY_APPS = [
