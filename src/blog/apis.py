@@ -6,7 +6,7 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema
 
 from api.mixins import ApiAuthMixin
-from api.pagination import get_paginated_response, LimitOffsetPagination
+from api.pagination import get_paginated_response_context, LimitOffsetPagination
 
 from blog.models import Article
 from blog.selectors.articles import article_list, article_detail
@@ -94,14 +94,9 @@ class ArticleListApi(APIView):
             fields = ("title", "url", "content", "author")
 
         def get_url(self, article):
-            print("---------------")
             request = self.context.get("request")
-            print(self.context)
-            print(request)
             path = reverse("api:blog:article-detail", args=(article.slug,))
-            print(path)
-            return "something"
-            # return request.build_absolute_uri(path)
+            return request.build_absolute_uri(path)
 
     @extend_schema(
         parameters=[ArticleFilterSerializer],
@@ -119,7 +114,7 @@ class ArticleListApi(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return get_paginated_response(
+        return get_paginated_response_context(
             pagination_class=self.Pagination,
             serializer_class=self.ArticleOutputSerializer,
             queryset=query,
