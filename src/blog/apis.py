@@ -13,7 +13,10 @@ from blog.selectors.articles import article_list, article_detail
 from blog.services.articles import create_article
 
 
-class ArticleCreateApi(ApiAuthMixin, APIView):
+class ArticleApi(ApiAuthMixin, APIView):
+    class Pagination(LimitOffsetPagination):
+        default_limit = 20
+
     class ArticleCreateSerializer(serializers.Serializer):
         title = serializers.CharField(max_length=150, required=True,)
         content = serializers.CharField(max_length=20_000, required=True)
@@ -30,6 +33,12 @@ class ArticleCreateApi(ApiAuthMixin, APIView):
             request = self.context.get("request")
             path = reverse("api:blog:article-detail", args=(article.slug,))
             return request.build_absolute_uri(path)
+
+        def get_author_email(self, article):
+            return article.author.email
+
+    class ArticleFilterSerializer(serializers.Serializer):
+        search = serializers.CharField(required=False, max_length=100)
 
     @extend_schema(request=ArticleCreateSerializer, responses=ArticleOutputSerializer)
     def post(self, request):
@@ -51,6 +60,30 @@ class ArticleCreateApi(ApiAuthMixin, APIView):
         return Response(
             self.ArticleOutputSerializer(query, context={"request": request}).data,
             status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        parameters=[ArticleFilterSerializer],
+        responses=ArticleOutputSerializer
+    )
+    def get(self, request):
+        filter_serializer = self.ArticleFilterSerializer(data=request.query_params)
+        filter_serializer.is_valid(raise_exception=True)
+
+        try:
+            query = article_list(filters=filter_serializer.validated_data)
+        except Exception as ex:
+            return Response(
+                {"detail": f"Filter Error - {ex}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return get_paginated_response_context(
+            pagination_class=self.Pagination,
+            serializer_class=self.ArticleOutputSerializer,
+            queryset=query,
+            request=request,
+            view=self,
         )
 
 
@@ -77,47 +110,3 @@ class ArticleDetailApi(APIView):
 
         serializer = self.ArticleDetailSerializer(query)
         return Response(serializer.data,)
-
-
-class ArticleListApi(APIView):
-    class Pagination(LimitOffsetPagination):
-        default_limit = 20
-
-    class ArticleFilterSerializer(serializers.Serializer):
-        search = serializers.CharField(required=False, max_length=100)
-
-    class ArticleOutputSerializer(serializers.ModelSerializer):
-        url = serializers.SerializerMethodField("get_url")
-
-        class Meta:
-            model = Article
-            fields = ("title", "url", "content", "author")
-
-        def get_url(self, article):
-            request = self.context.get("request")
-            path = reverse("api:blog:article-detail", args=(article.slug,))
-            return request.build_absolute_uri(path)
-
-    @extend_schema(
-        parameters=[ArticleFilterSerializer],
-        responses=ArticleOutputSerializer
-    )
-    def get(self, request):
-        filter_serializer = self.ArticleFilterSerializer(data=request.query_params)
-        filter_serializer.is_valid(raise_exception=True)
-
-        try:
-            query = article_list(filters=filter_serializer.validated_data)
-        except Exception as ex:
-            return Response(
-                {"detail": f"Filter Error - {ex}"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        return get_paginated_response_context(
-            pagination_class=self.Pagination,
-            serializer_class=self.ArticleOutputSerializer,
-            queryset=query,
-            request=request,
-            view=self,
-        )
