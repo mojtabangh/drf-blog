@@ -5,6 +5,7 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema
 
 from api.mixins import ApiAuthMixin
+from api.pagination import get_paginated_response, LimitOffsetPagination
 
 from blog.models import Article
 from blog.selectors.articles import article_list
@@ -19,6 +20,9 @@ class ArticleDetailApi(APIView):
 
 
 class ArticleListApi(APIView):
+    class Pagination(LimitOffsetPagination):
+        default_limit = 20
+
     class ArticleFilterSerializer(serializers.Serializer):
         search = serializers.CharField(required=False, max_length=100)
 
@@ -43,5 +47,10 @@ class ArticleListApi(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = self.ArticleOutputSerializer(query, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return get_paginated_response(
+            pagination_class=self.Pagination,
+            serializer_class=self.ArticleOutputSerializer,
+            queryset=query,
+            request=request,
+            view=self,
+        )
