@@ -44,4 +44,4 @@ class ArticleListApi(APIView):
             )
 
         serializer = self.ArticleOutputSerializer(query, many=True)
-        return Response(serializer.data5, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
