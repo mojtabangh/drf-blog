@@ -39,6 +39,11 @@ class ArticleApi(ApiAuthMixin, APIView):
 
     class ArticleFilterSerializer(serializers.Serializer):
         search = serializers.CharField(required=False, max_length=100)
+        created_at__range = serializers.CharField(
+            required=False,
+            max_length=30,
+            help_text="enter two ranges. example: \"2025-03-05,2025-03-08\" or \"2025-03-05,\" or \",2025-03-05\" ",
+        )
 
     @extend_schema(request=ArticleCreateSerializer, responses=ArticleOutputSerializer)
     def post(self, request):
